@@ -9,7 +9,14 @@ server.get("/", async (req, res) => {
     let allForms = forms.map((form) => {
       return modelizer(form);
     });
-    res.json(allForms.length ? allForms : "No records to display");
+    !allForms.length && res.json("No records to display");
+    const publishedForms = allForms.filter((f) => !!f.form.isPublished);
+    const drafts = allForms.filter((f) => !f.form.isPublished);
+    const response = {
+      publishedForms,
+      drafts,
+    };
+    res.json(response);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

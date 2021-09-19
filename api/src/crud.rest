@@ -6,7 +6,7 @@ GET http://localhost:3001/forms/6145343d82eca7e86c795d12
 
 GET http://localhost:3001/forms/61473f81aaf3dbd1ab2e241f
 ###
-PUT http://localhost:3001/forms/publish/61473f81aaf3dbd1ab2e241f
+PUT http://localhost:3001/forms/publish/6145343d82eca7e86c795d12
 ###
 
 
@@ -15,17 +15,17 @@ content-type: application/json
 
 {
     "form": {
-        "name": "Question 1",
-        "description": "first testing Question",
+        "name": "Question 2",
+        "description": "second testing Question",
         "questions": [
             {
-                "question_type": "text",
-                "text": "is first question working?",
-                "options": ["answer"]
+                "question_type": "multiple",
+                "text": "select options",
+                "options": ["option_1", "option_2", "option_3", "option_4"]
             },
             {
                 "question_type": "simple",
-                "text": "is second question working?",
+                "text": "is this question working?",
                 "options": ["yes", "no"]
             }
         ],
@@ -34,5 +34,5 @@ content-type: application/json
 }
 ###
 
-DELETE http://localhost:3001/forms/6145345582eca7e86c795d16
+DELETE http://localhost:3001/forms/6147445592240c12bdf1138a
 ###
