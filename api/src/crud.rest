@@ -1,0 +1,38 @@
+
+GET http://localhost:3001/forms
+###
+GET http://localhost:3001/forms/6145343d82eca7e86c795d12
+###
+
+GET http://localhost:3001/forms/61473f81aaf3dbd1ab2e241f
+###
+PUT http://localhost:3001/forms/publish/61473f81aaf3dbd1ab2e241f
+###
+
+
+POST http://localhost:3001/forms HTTP/1.1
+content-type: application/json
+
+{
+    "form": {
+        "name": "Question 1",
+        "description": "first testing Question",
+        "questions": [
+            {
+                "question_type": "text",
+                "text": "is first question working?",
+                "options": ["answer"]
+            },
+            {
+                "question_type": "simple",
+                "text": "is second question working?",
+                "options": ["yes", "no"]
+            }
+        ],
+        "isPublished": false
+    } 
+}
+###
+
+DELETE http://localhost:3001/forms/6145345582eca7e86c795d16
+###
