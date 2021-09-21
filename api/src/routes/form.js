@@ -9,14 +9,16 @@ server.get("/", async (req, res) => {
     let allForms = forms.map((form) => {
       return modelizer(form);
     });
-    !allForms.length && res.json("No records to display");
-    const publishedForms = allForms.filter((f) => !!f.form.isPublished);
-    const drafts = allForms.filter((f) => !f.form.isPublished);
-    const response = {
-      publishedForms,
-      drafts,
-    };
-    res.json(response);
+    if (!allForms.length) {
+      res.json("No records to display");
+    } else {
+      const publishedForms = allForms.filter((f) => !!f.form.isPublished);
+      const drafts = allForms.filter((f) => !f.form.isPublished);
+      res.json({
+        publishedForms,
+        drafts,
+      });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -58,7 +60,7 @@ server.put("/publish/:id", getForm, async (req, res) => {
   res.form.form.isPublished = !isPublished;
   try {
     const updatedForm = await res.form.save();
-    res.json(updatedForm);
+    res.json(modelizer(updatedForm));
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
