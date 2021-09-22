@@ -10,9 +10,8 @@ import { v4 as uuidv4 } from "uuid";
 
 import { makeStyles } from "@material-ui/core/styles";
 import {
-  Box,
-  Checkbox,
   Divider,
+  Grid,
   InputLabel,
   List,
   ListItem,
@@ -33,6 +32,10 @@ const useStyles = makeStyles((theme) => ({
   },
   button: {
     margin: theme.spacing(1),
+  },
+  formField: {
+    margin: theme.spacing(1),
+    textAlign: "center",
   },
 }));
 
@@ -85,7 +88,6 @@ function AddForm() {
     dispatch(addForm(newForm));
     history.push("/");
   };
-
   const handleChangeForm = (event) => {
     setFormFields({
       ...formFields,
@@ -108,7 +110,6 @@ function AddForm() {
       questions: newQuestions,
     });
   };
-
   const handleAddQuestions = () => {
     setFormFields({
       ...formFields,
@@ -128,7 +129,6 @@ function AddForm() {
       ],
     });
   };
-
   const handleRemoveQuestion = (id) => {
     const questions = [...formFields.questions];
     const newQuestions = questions.filter((question) => question.id !== id);
@@ -137,7 +137,6 @@ function AddForm() {
       questions: newQuestions,
     });
   };
-
   const handleAddOption = (index, event) => {
     event.preventDefault();
     let newform = { ...formFields };
@@ -154,115 +153,177 @@ function AddForm() {
       event.target.value;
     setFormFields(newForm);
   };
+  const handleRemoveOption = (questionIndex, optionIndex, event) => {
+    event.preventDefault();
+    let newForm = { ...formFields };
+    newForm.questions[questionIndex].options.splice(optionIndex);
+    setFormFields(newForm);
+  };
 
   return (
-    <Container>
+    <Container maxWidth={"sm"}>
       <h1>Add New Form</h1>
       <form className={classes.root} onSubmit={handleSubmit}>
-        <div>
-          <TextField
-            name='title'
-            label='Title'
-            variant='filled'
-            value={formFields.title}
-            onChange={(event) => handleChangeForm(event)}
-          />
-          <TextField
-            name='description'
-            label='Description'
-            variant='filled'
-            value={formFields.description}
-            onChange={(event) => handleChangeForm(event)}
-          />
+        <Grid container>
+          <Grid item xs={12}>
+            <TextField
+              fullWidth
+              name='title'
+              label='Title'
+              variant='filled'
+              value={formFields.title}
+              onChange={(event) => handleChangeForm(event)}
+            />
+            <Grid item xs={12}></Grid>
+            <TextField
+              fullWidth
+              name='description'
+              label='Description'
+              variant='filled'
+              value={formFields.description}
+              onChange={(event) => handleChangeForm(event)}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            {formFields.questions?.map((question, index) => {
+              return (
+                <Grid container className={classes.formField}>
+                  <Grid item xs={12} className={classes.formField}>
+                    <Divider style={{ margin: ".5rem" }} />
 
-          {formFields.questions?.map((question, index) => {
-            return (
-              <div key={question.id}>
-                <TextField
-                  name={`text`}
-                  label={`Question ${index + 1}`}
-                  variant='filled'
-                  fullWidth
-                  value={formFields.questions[index].text}
-                  onChange={(event) => handleChangeQuestion(question.id, event)}
-                />
-                <InputLabel id='question-type'>Question Type</InputLabel>
-                <Select
-                  name={`question_type`}
-                  value={formFields.questions[index].question_type}
-                  label='Question Type'
-                  fullWidth
-                  defaultValue={"simple"}
-                  onChange={(event) => handleChangeQuestion(question.id, event)}
-                >
-                  <MenuItem value={"simple"}>Simple</MenuItem>
-                  <MenuItem value={"multiple"}>Multiple</MenuItem>
-                  <MenuItem value={"text"}>Text</MenuItem>
-                </Select>
+                    <Grid container>
+                      <Grid item xs={6}>
+                        <IconButton id={`question-${index + 1}`} size='large'>
+                          Question {`${index + 1}`}
+                        </IconButton>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <IconButton
+                          disabled={formFields.length === 1}
+                          onClick={() => handleRemoveQuestion(question.id)}
+                          size='small'
+                          color='secondary'
+                        >
+                          Remove Question
+                        </IconButton>
+                      </Grid>
+                    </Grid>
+                  </Grid>
+                  <Grid item xs={12} key={question.id}>
+                    <TextField
+                      name={`text`}
+                      label={`Question ${index + 1}`}
+                      variant='filled'
+                      fullWidth
+                      value={formFields.questions[index].text}
+                      onChange={(event) =>
+                        handleChangeQuestion(question.id, event)
+                      }
+                    />
+                  </Grid>
+                  <Grid item xs={6} className={classes.formField}>
+                    <InputLabel id={`question-${index + 1}`}>
+                      Question Type{`${index + 1}`}
+                    </InputLabel>
+                  </Grid>
+                  <Grid item xs={6} className={classes.formField}>
+                    <Select
+                      name={`question_type`}
+                      value={formFields.questions[index].question_type}
+                      label='Question Type'
+                      fullWidth
+                      defaultValue={"simple"}
+                      onChange={(event) =>
+                        handleChangeQuestion(question.id, event)
+                      }
+                    >
+                      <MenuItem value={"simple"}>Simple</MenuItem>
+                      <MenuItem value={"multiple"}>Multiple</MenuItem>
+                      <MenuItem value={"text"}>Text</MenuItem>
+                    </Select>
+                  </Grid>
+                  {question.question_type === "text" ? (
+                    <TextareaAutosize
+                      aria-label='option'
+                      placeholder='option...'
+                      style={{ width: 200 }}
+                    />
+                  ) : question.question_type === "multiple" ? (
+                    question.options.map((option, i) => {
+                      return (
+                        <div key={option.id}>
+                          <TextField
+                            name={`option`}
+                            label={`Option ${i + 1}`}
+                            variant='filled'
+                            fullWidth
+                            value={
+                              formFields.questions[index].options[i].option
+                            }
+                            onChange={(event) =>
+                              handleChangeOption(index, i, event)
+                            }
+                          />
+                        </div>
+                      );
+                    })
+                  ) : (
+                    question.options.map((option, i) => {
+                      return (
+                        <Grid container>
+                          <Grid item xs={8}>
+                            <TextField
+                              name={`option`}
+                              label={`Option ${i + 1}`}
+                              variant='filled'
+                              fullWidth
+                              value={
+                                formFields.questions[index].options[i].option
+                              }
+                              onChange={(event) =>
+                                handleChangeOption(index, i, event)
+                              }
+                            />
+                          </Grid>
+                          <Grid item xs={4}>
+                            <IconButton
+                              disabled={formFields.length === 1}
+                              onClick={(event) =>
+                                handleRemoveOption(index, i, event)
+                              }
+                              size='small'
+                              color='secondary'
+                              className={classes.formField}
+                            >
+                              Remove Option
+                            </IconButton>
+                          </Grid>
+                        </Grid>
+                      );
+                    })
+                  )}
+                  <IconButton
+                    onClick={(evt) => handleAddOption(index, evt)}
+                    size='small'
+                  >
+                    Add Option
+                    <AddIcon />
+                  </IconButton>
 
-                {question.question_type === "text" ? (
-                  <TextareaAutosize
-                    aria-label='option'
-                    placeholder='option...'
-                    style={{ width: 200 }}
-                  />
-                ) : question.question_type === "multiple" ? (
-                  question.options.map((option, i) => {
-                    return (
-                      <div key={option.id}>
-                        <TextField
-                          name={`option`}
-                          label={`Option ${i + 1}`}
-                          variant='filled'
-                          fullWidth
-                          value={formFields.questions[index].options[i].option}
-                          onChange={(event) =>
-                            handleChangeOption(index, i, event)
-                          }
-                        />
-                      </div>
-                    );
-                  })
-                ) : (
-                  question.options.map((option, i) => {
-                    return (
-                      <TextField
-                        name={`option`}
-                        label={`Option ${i + 1}`}
-                        variant='filled'
-                        fullWidth
-                        value={formFields.questions[index].options[i].option}
-                        onChange={(event) =>
-                          handleChangeOption(index, i, event)
-                        }
-                      />
-                    );
-                  })
-                )}
-                <IconButton onClick={(evt) => handleAddOption(index, evt)}>
-                  {`Add Option`}
-                  <AddIcon />
-                </IconButton>
+                  <Divider style={{ margin: ".5rem" }} />
+                </Grid>
+              );
+            })}
+            <Divider style={{ margin: ".5rem" }} />
 
-                <IconButton
-                  disabled={formFields.length === 1}
-                  onClick={() => handleRemoveQuestion(question.id)}
-                >
-                  {`Delete Question`}
-
-                  <RemoveIcon />
-                </IconButton>
-                <Divider style={{ margin: ".5rem" }} />
-              </div>
-            );
-          })}
-          <div>
-            <IconButton onClick={handleAddQuestions}>
-              {`Add Question`}
-              <AddIcon />
-            </IconButton>
-          </div>
-        </div>
+            <div>
+              <IconButton onClick={handleAddQuestions}>
+                Add Question
+                <AddIcon />
+              </IconButton>
+            </div>
+          </Grid>
+        </Grid>
         <Button
           className={classes.button}
           variant='contained'
