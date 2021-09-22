@@ -1,59 +1,80 @@
-// import React from 'react'
+import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   deleteForm,
   togglePublishForm,
 } from "../../redux/actions/formsActions";
+import {
+  Container,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  Typography,
+  Link,
+  Button,
+  ListItemButton,
+  Grid,
+} from "@mui/material";
+import { Box } from "@mui/system";
+
+import { makeStyles } from "@material-ui/core/styles";
+import FormsList from "./FormsList";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    "& .MuiTextField-root": {
+      margin: theme.spacing(1),
+    },
+  },
+  button: {
+    margin: theme.spacing(1),
+  },
+  paper: {
+    margin: theme.spacing(3),
+    padding: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    color: theme.palette.text.paper,
+  },
+}));
 
 export default function Home() {
-  const dispatch = useDispatch();
+  const classes = useStyles();
   const forms = useSelector(
     (state) => state.formsReducer.formsList.publishedForms
   );
   const drafts = useSelector((state) => state.formsReducer.formsList.drafts);
-  const noRecords = useSelector((state) => state.formsReducer.formsList);
 
   return (
-    <div>
-      <h4>All Surveys</h4>
-      <h5>published:</h5>
-      <ul>
-        {typeof noRecords === "string"
-          ? "No records to display"
-          : forms?.map((item) => {
-              return (
-                <li key={item?.form.id}>
-                  <a href={`/${item?.form.id}`}>{item?.form.name}</a>
-                  <button
-                    onClick={() => dispatch(togglePublishForm(item?.form.id))}
-                  >
-                    {item?.form.isPublished ? "Unpublish" : "Publish"}
-                  </button>
-                  <button onClick={() => dispatch(deleteForm(item?.form.id))}>
-                    X
-                  </button>
-                </li>
-              );
-            })}
-      </ul>
-      <h5>drafts:</h5>
-      <ul>
-        {drafts?.map((item) => {
-          return (
-            <li key={item?.form.id}>
-              <a href={`/${item?.form.id}`}>{item?.form.name}</a>
-              <button
-                onClick={() => dispatch(togglePublishForm(item?.form.id))}
-              >
-                {item?.form.isPublished ? "Unpublish" : "Publish"}
-              </button>
-              <button onClick={() => dispatch(deleteForm(item?.form.id))}>
-                X
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <Container maxWidth='sm'>
+      <Grid container>
+        <Grid item xs={12}>
+          <Typography component='span' variant='h4'>
+            All Surveys
+          </Typography>
+        </Grid>
+        <Grid item xs={12}>
+          <Button>
+            <Link href='/create'>Create a your survey</Link>
+          </Button>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper className={classes.paper}>
+            <Typography component='span' variant='body1'>
+              Published Forms:
+            </Typography>
+            <FormsList list={forms} />
+          </Paper>
+        </Grid>
+        <Grid item xs={12}>
+          <Paper className={classes.paper}>
+            <Typography component='span' variant='body1'>
+              Drafts:
+            </Typography>
+            <FormsList list={drafts} />
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
