@@ -2,7 +2,7 @@
 
 To run locally the project will need a MongoDb (tested on v5.0.2) for database(DB). Inside API folder create a .env file to set up the DB with the following structure:
 
-> DATABASE_URL=mongodb://localhost/surveys
+> DATABASE_URL=mongodb://localhost/database_name
 
 ---
 
