@@ -19,11 +19,11 @@ or
 
 Installs all dependecies needed
 
-> `yarn run startDev`
+> `yarn start`
 
 or
 
-> `npm run startDev`
+> `npm start`
 
 Runs the app in the development mode.
 
